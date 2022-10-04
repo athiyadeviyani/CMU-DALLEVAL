@@ -10,8 +10,10 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
 parser.add_argument("--length", type=str, default="50")
+parser.add_argument("--prompt", type=str, default="simple")  # magic
 args = parser.parse_args()
 samples = int(args.samples)
+prompt_gen = args.prompt
 prompt_length = int(args.length)
 
 
@@ -39,12 +41,7 @@ with open('templates/others.txt', 'r') as f:
     for line in f.readlines():
         others.append(line.replace('\n',''))
 
-tokenizer = AutoTokenizer.from_pretrained("Gustavosta/MagicPrompt-Stable-Diffusion")
-model = AutoModelForCausalLM.from_pretrained("Gustavosta/MagicPrompt-Stable-Diffusion")
 
-prompt_generator = transformers.pipeline('text-generation', 
-                                  model='Gustavosta/MagicPrompt-Stable-Diffusion', 
-                                  tokenizer=tokenizer)
 
 template_1 = 'a photo of a {}, '
 template_2 = 'a person with a {}, '
@@ -57,14 +54,38 @@ for person in others+political+professions:
 for item in objects:
     raw_prompts.append(template_2.format(item))
 
-modified_prompts = []
 
-print('Generating prompts...')
-for prompt in tqdm(raw_prompts):
-    generated_prompt = prompt_generator(prompt, pad_token_id=tokenizer.eos_token_id, max_length=prompt_length)
-    generated_prompt = generated_prompt[0]['generated_text'].replace('\n', '')
-    modified_prompts.append(generated_prompt)
+if prompt_gen == "magic":
 
+    tokenizer = AutoTokenizer.from_pretrained("Gustavosta/MagicPrompt-Stable-Diffusion")
+    model = AutoModelForCausalLM.from_pretrained("Gustavosta/MagicPrompt-Stable-Diffusion")
+
+    prompt_generator = transformers.pipeline('text-generation', 
+                                    model='Gustavosta/MagicPrompt-Stable-Diffusion', 
+                                    tokenizer=tokenizer)
+
+    modified_prompts = []
+
+    print('Generating prompts...')
+    for prompt in tqdm(raw_prompts):
+        generated_prompt = prompt_generator(prompt, pad_token_id=tokenizer.eos_token_id, max_length=prompt_length)
+        generated_prompt = generated_prompt[0]['generated_text'].replace('\n', '')
+        modified_prompts.append(generated_prompt)
+
+else: # simple
+    art_styles = []
+    with open('art_styles.txt', 'r') as f:   
+        for line in f.readlines():
+            art_styles.append(line.replace('\n',''))
+
+    
+    modified_prompts = []
+
+    print('Generating prompts...')
+    for prompt in tqdm(raw_prompts):
+        style = np.random.choice(art_styles, 1)[0]
+        new_prompt = prompt + style
+        modified_prompts.append(new_prompt)
 
 #############################################################################
 ############################## STABLE DIFFUSION #############################
@@ -97,7 +118,7 @@ generated_grids = []
 print('Generating images...')
 for prompt in tqdm(sample_prompts):
     plt.figure(figsize=(30, 10))
-    filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
+    filename = 'generated_images_simple/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     images = pipeline([prompt]*3).images
     grid = image_grid(images, rows=1, cols=3)
     plt.title(prompt)
