@@ -83,10 +83,10 @@ pipeline = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
 pipeline = pipeline.to("cuda")
 
 # First-time "warmup" pass (see explanation above)
-prompt = "a photo of an astronaut riding a horse on mars"
-_ = pipeline(prompt, num_inference_steps=1)
-# Results match those from the CPU device after the warmup pass.
-image = pipeline(prompt).images[0]
+# prompt = "a photo of an astronaut riding a horse on mars"
+# _ = pipeline(prompt, num_inference_steps=1)
+# # Results match those from the CPU device after the warmup pass.
+# image = pipeline(prompt).images[0]
 
 sample_prompts = np.random.choice(modified_prompts, samples)
 
@@ -95,9 +95,10 @@ generated_grids = []
 print('Generating images...')
 for prompt in tqdm(sample_prompts):
     plt.figure(figsize=(30, 10))
-    filename = '_'.join(prompt.split(',')[0].split(' ')) + '.png'
+    filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     images = pipeline([prompt]*3).images
     grid = image_grid(images, rows=1, cols=3)
+    plt.title(prompt)
     plt.imshow(grid)
-    plt.savefig(filename, dpi=1200)
+    plt.savefig(filename)
     plt.close()
