@@ -11,9 +11,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
 parser.add_argument("--length", type=str, default="50")
 parser.add_argument("--prompt", type=str, default="simple")  # magic
+parser.add_argument("--white", action='store_true')
 args = parser.parse_args()
 samples = int(args.samples)
 prompt_gen = args.prompt
+white_bg = args.white
 prompt_length = int(args.length)
 
 
@@ -85,6 +87,8 @@ else: # simple
     for prompt in tqdm(raw_prompts):
         style = np.random.choice(art_styles, 1)[0]
         new_prompt = prompt + style
+        if white_bg:
+            new_prompt = new_prompt + ', white background'
         modified_prompts.append(new_prompt)
 
 #############################################################################
@@ -120,6 +124,8 @@ for prompt in tqdm(sample_prompts):
     plt.figure(figsize=(30, 10))
     if prompt_gen == 'simple':
         filename = 'generated_images_simple/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
+    elif white_bg:
+        filename = 'generated_images_white/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     else:
         filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     images = pipeline([prompt]*3).images

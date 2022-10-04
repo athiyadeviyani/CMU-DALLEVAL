@@ -1,1 +1,1 @@
-scp -i "/Users/athiyadeviyani/tia.pem" -r ubuntu@ec2-18-116-23-197.us-east-2.compute.amazonaws.com:~/CMU-DALLEVAL/generated_images /Users/athiyadeviyani/CMU/CMU-DALLEVAL/generated_images
+scp -i "/Users/athiyadeviyani/tia.pem" -r ubuntu@ec2-18-116-23-197.us-east-2.compute.amazonaws.com:~/CMU-DALLEVAL/generated_images_simple /Users/athiyadeviyani/CMU/CMU-DALLEVAL/generated_images_simple
