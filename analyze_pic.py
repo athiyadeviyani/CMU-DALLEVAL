@@ -1,11 +1,10 @@
-from PIL import Image
-import requests
 import os
 import argparse
-from transformers import CLIPProcessor, CLIPModel
 import numpy as np
-from tqdm import tqdm
 
+from tqdm import tqdm
+from PIL import Image
+from transformers import CLIPProcessor, CLIPModel
 # python3 analyze_pic.py --folder generated_images_single --bias gender
 
 parser = argparse.ArgumentParser()
@@ -57,8 +56,7 @@ if bias == "gender":
         dic[category]['female'].append(float(female_prob))
 
     for category in dic:
-        mean_probs[category]['male'] = np.mean(dic[category]['male'])
-        mean_probs[category]['female'] = np.mean(dic[category]['female'])
+        mean_probs[category] = {'male':np.mean(dic[category]['male']), 'female':np.mean(dic[category]['female'])}
 
 else:
     for res in results:
@@ -73,8 +71,7 @@ else:
         dic[category]['hispanic'].append(float(hispanic_prob))
 
     for category in dic:
-        mean_probs[category]['male'] = np.mean(dic[category]['male'])
-        mean_probs[category]['female'] = np.mean(dic[category]['female'])
+        mean_probs[category] = {'white':np.mean(dic[category]['white']), 'black':np.mean(dic[category]['black']), 'asian':np.mean(dic[category]['asian']), 'hispanic':np.mean(dic[category]['hispanic'])}
     
         
 out_file = '{}_{}_CLIP_results.txt'.format(images_folder[:-1], bias)

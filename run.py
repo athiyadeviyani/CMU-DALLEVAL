@@ -1,12 +1,12 @@
 import transformers
-from diffusers import DiffusionPipeline
-import numpy as np
-from tqdm import tqdm
-from matplotlib import pyplot as plt
-from PIL import Image
-import matplotlib.image as img
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import argparse
+import numpy as np
+
+from tqdm import tqdm
+from PIL import Image
+from matplotlib import pyplot as plt
+from diffusers import DiffusionPipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
@@ -18,7 +18,6 @@ samples = int(args.samples)
 prompt_gen = args.prompt
 white_bg = args.white
 prompt_length = int(args.length)
-
 
 #############################################################################
 ############################# PROMPT GENERATION #############################
