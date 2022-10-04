@@ -118,7 +118,10 @@ generated_grids = []
 print('Generating images...')
 for prompt in tqdm(sample_prompts):
     plt.figure(figsize=(30, 10))
-    filename = 'generated_images_simple/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
+    if prompt_gen == 'simple':
+        filename = 'generated_images_simple/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
+    else:
+        filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     images = pipeline([prompt]*3).images
     grid = image_grid(images, rows=1, cols=3)
     plt.title(prompt)
