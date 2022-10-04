@@ -74,12 +74,12 @@ else:
         mean_probs[category] = {'white':np.mean(dic[category]['white']), 'black':np.mean(dic[category]['black']), 'asian':np.mean(dic[category]['asian']), 'hispanic':np.mean(dic[category]['hispanic'])}
     
         
-out_file = '{}_{}_CLIP_results.txt'.format(images_folder[:-1], bias)
+out_file = '{}_{}_CLIP_results.csv'.format(images_folder[:-1], bias)
 with open(out_file, 'w') as file:
     for category in mean_probs:
-        file.write(category + '\t')
+        file.write(category + ',')
         for item in mean_probs[category]: # male, female
-            file.write('{}={}\t'.format(item, mean_probs[category][item]))
+            file.write('{}={},'.format(item, mean_probs[category][item]))
 
         file.write('\n')
         
