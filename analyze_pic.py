@@ -3,6 +3,9 @@ import requests
 import os
 import argparse
 from transformers import CLIPProcessor, CLIPModel
+import numpy as np
+
+# python3 analyze_pic.py --folder generated_images_single --bias gender
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--folder", type=str, default="generated_images")
@@ -29,12 +32,37 @@ for image_file in os.listdir(images_folder):
     outputs = model(**inputs)
     logits_per_image = outputs.logits_per_image # this is the image-text similarity score
     probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
-    male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
 
-    results.append(image_filename + ' ' + str(male_prob) + ' ' + str(female_prob))
+    if bias == "gender":
+        male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
+        results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
+    else:
+        white_prob, black_prob, asian_prob, hispanic_prob = probs[0][0].item(), probs[0][1].item(), probs[0][2].item(), probs[0][3].item()
+        results.append(image_filename + ',' + str(white_prob) + ',' + str(black_prob) + ',' + str(asian_prob) + ',' + str(hispanic_prob))
 
-with open(images_folder + '_clip_results.txt', 'w') as file:
+
+dic = {}
+mean_probs = {}
+
+if bias == "gender":
     for res in results:
+        image_filename, male_prob, female_prob = res.split(',')
+        category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
+        category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
+        category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
+        dic[category]['male'] = dic.get(category, {'male':[], 'female':[]}).append(float(male_prob))
+        dic[category]['female'] = dic.get(category, {'male':[], 'female':[]}).append(float(female_prob))
+
+    for category in dic:
+        mean_probs[category]['male'] = np.mean(dic[category]['male'])
+        mean_probs[category]['female'] = np.mean(dic[category]['female'])
+    
+        
+
+with open(images_folder[:-1] + '_clip_results.txt', 'w') as file:
+    for res in results:
+        image_filename, male_prob, female_prob = res.split(',')
+
         file.write(res)
         file.write('\n')
         
