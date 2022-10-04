@@ -52,8 +52,9 @@ if bias == "gender":
         category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
         category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
         category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
-        dic[category]['male'] = dic.get(category, {'male':[], 'female':[]})['male'].append(float(male_prob))
-        dic[category]['female'] = dic.get(category, {'male':[], 'female':[]})['female'].append(float(female_prob))
+        dic[category] = dic.get(category, {'male':[], 'female':[]})
+        dic[category]['male'].append(float(male_prob))
+        dic[category]['female'].append(float(female_prob))
 
     for category in dic:
         mean_probs[category]['male'] = np.mean(dic[category]['male'])
@@ -65,10 +66,11 @@ else:
         category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
         category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
         category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
-        dic[category]['white'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['white'].append(float(white_prob))
-        dic[category]['black'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['black'].append(float(black_prob))
-        dic[category]['asian'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['asian'].append(float(asian_prob))
-        dic[category]['hispanic'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['hispanic'].append(float(hispanic_prob))
+        dic[category] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})
+        dic[category]['white'].append(float(white_prob))
+        dic[category]['black'].append(float(black_prob))
+        dic[category]['asian'].append(float(asian_prob))
+        dic[category]['hispanic'].append(float(hispanic_prob))
 
     for category in dic:
         mean_probs[category]['male'] = np.mean(dic[category]['male'])
