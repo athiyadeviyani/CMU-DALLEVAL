@@ -14,7 +14,7 @@ bias = args.bias
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-images_folder = folder
+images_folder = folder + '/'
 results = []
 
 for image_file in os.listdir(images_folder):
