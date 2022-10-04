@@ -79,7 +79,7 @@ with open(out_file, 'w') as file:
     for category in mean_probs:
         file.write(category + '\t')
         for item in mean_probs[category]: # male, female
-            file.write('{}={}\t'.format(item, mean_probs['category'][item]))
+            file.write('{}={}\t'.format(item, mean_probs[category][item]))
 
         file.write('\n')
         
