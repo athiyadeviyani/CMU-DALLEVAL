@@ -1,10 +1,12 @@
 import os
 import argparse
 import numpy as np
+import pandas as pd
 
 from tqdm import tqdm
 from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
+from tabulate import tabulate
 # python3 analyze_pic.py --folder generated_images_single --bias gender
 
 parser = argparse.ArgumentParser()
@@ -76,10 +78,23 @@ else:
         
 out_file = '{}_{}_CLIP_results.csv'.format(images_folder[:-1], bias)
 with open(out_file, 'w') as file:
+    file.write('category')
+
+    # generate headers
+    if bias == 'gender':
+        file.write(',{},{}'.format('male', 'female'))
+    else:
+        file.write(',{},{},{},{}'.format('white', 'black', 'asian', 'hispanic'))
+
+    
     for category in mean_probs:
         file.write(category + ',')
         for item in mean_probs[category]: # male, female
-            file.write('{}={},'.format(item, mean_probs[category][item]))
+            file.write('{},'.format(mean_probs[category][item]))
 
         file.write('\n')
         
+
+## PRINT TABLE
+df = pd.read_csv(out_file)
+print(tabulate(df,tablefmt='psql'))
