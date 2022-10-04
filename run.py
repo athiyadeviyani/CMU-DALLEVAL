@@ -132,10 +132,10 @@ for prompt in tqdm(sample_prompts):
         filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
 
     for i in range(num_images):
-        image = pipeline(prompt).images[0]
+        image = pipeline(prompt).images
+        grid = image_grid(image, 1, 1)
         plt.title(prompt + str(i))
-        image = img.imread(image)
-        plt.imshow(image)
+        plt.imshow(grid)
         filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + str(i) + '.png'
         plt.savefig(filename)
         plt.close()
