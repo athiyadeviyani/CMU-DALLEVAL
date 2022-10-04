@@ -3,5 +3,5 @@
 Quick run
 ```
 bash setup.sh
-python3 run.py --samples 1
+python3 run.py --samples {n_samples} --prompt_gen {simple/magic} --length {length cap of magic generator}
 ```
