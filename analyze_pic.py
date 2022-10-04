@@ -101,4 +101,4 @@ with open(out_file, 'w') as file:
 
 ## PRINT TABLE
 df = pd.read_csv(out_file)
-print(tabulate(df,headers="firstrow",tablefmt='psql'))
+print(tabulate(df,headers=df.columns,tablefmt='psql'))
