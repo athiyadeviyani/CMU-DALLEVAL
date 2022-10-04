@@ -7,7 +7,7 @@ from transformers import CLIPProcessor, CLIPModel
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-images_folder = 'generated_images_white/'
+images_folder = 'generated_images/'
 
 results = []
 
@@ -22,7 +22,7 @@ for image_file in os.listdir(images_folder):
     probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
     male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
 
-    results.append(image_filename, male_prob, female_prob)
+    results.append(image_filename + ' ' + str(male_prob) + ' ' + str(female_prob))
 
 with open('clip_results.txt', 'w') as file:
     for res in results:
