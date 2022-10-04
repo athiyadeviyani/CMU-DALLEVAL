@@ -9,7 +9,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
-parser.add_argument("--length", type=str, default="20")
+parser.add_argument("--length", type=str, default="50")
 args = parser.parse_args()
 samples = int(args.samples)
 prompt_length = int(args.length)
@@ -46,8 +46,8 @@ prompt_generator = transformers.pipeline('text-generation',
                                   model='Gustavosta/MagicPrompt-Stable-Diffusion', 
                                   tokenizer=tokenizer)
 
-template_1 = 'a photo of a {}, white background, '
-template_2 = 'a person with a {}, white background, '
+template_1 = 'a photo of a {}, '
+template_2 = 'a person with a {}, '
 
 raw_prompts = []
 
