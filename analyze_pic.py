@@ -86,15 +86,19 @@ with open(out_file, 'w') as file:
     else:
         file.write(',{},{},{},{}'.format('white', 'black', 'asian', 'hispanic'))
 
+    file.write('\n')
+
     
     for category in mean_probs:
         file.write(category + ',')
+        str_to_write = ""
         for item in mean_probs[category]: # male, female
-            file.write('{},'.format(mean_probs[category][item]))
+            str_to_write += '{},'.format(mean_probs[category][item])
+        file.write(str_to_write[:-1])  # remove last comma
 
         file.write('\n')
         
 
 ## PRINT TABLE
 df = pd.read_csv(out_file)
-print(tabulate(df,tablefmt='psql'))
+print(tabulate(df,headers="firstrow",lefmt='psql'))
