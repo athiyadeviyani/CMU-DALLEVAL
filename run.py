@@ -118,6 +118,7 @@ pipeline = pipeline.to("cuda")
 sample_prompts = np.random.choice(modified_prompts, samples)
 
 generated_grids = []
+num_images = 5  # number of images per prompt
 
 print('Generating images...')
 for prompt in tqdm(sample_prompts):
@@ -128,9 +129,11 @@ for prompt in tqdm(sample_prompts):
         filename = 'generated_images_white/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
     else:
         filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + '.png'
-    images = pipeline([prompt]*3).images
-    grid = image_grid(images, rows=1, cols=3)
-    plt.title(prompt)
-    plt.imshow(grid)
-    plt.savefig(filename)
-    plt.close()
+
+    for i in range(num_images):
+        image = pipeline(prompt).images
+        plt.title(prompt + str(i))
+        plt.imshow(image)
+        filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + str(i) + '.png'
+        plt.savefig(filename)
+        plt.close()
