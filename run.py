@@ -9,8 +9,10 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
+parser.add_argument("--length", type=str, default="20")
 args = parser.parse_args()
 samples = int(args.samples)
+prompt_length = int(args.length)
 
 
 #############################################################################
@@ -59,7 +61,7 @@ modified_prompts = []
 
 print('Generating prompts...')
 for prompt in tqdm(raw_prompts):
-    generated_prompt = prompt_generator(prompt, pad_token_id=tokenizer.eos_token_id, max_length=50)
+    generated_prompt = prompt_generator(prompt, pad_token_id=tokenizer.eos_token_id, max_length=prompt_length)
     generated_prompt = generated_prompt[0]['generated_text'].replace('\n', '')
     modified_prompts.append(generated_prompt)
 

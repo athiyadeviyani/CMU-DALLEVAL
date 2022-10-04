@@ -3,5 +3,5 @@
 Quick run
 ```
 bash setup.sh
-python run.py --samples 1
+python3 run.py --samples 1
 ```
