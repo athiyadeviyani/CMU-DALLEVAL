@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 from PIL import Image
+import matplotlib.image as img
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import argparse
 
@@ -133,6 +134,7 @@ for prompt in tqdm(sample_prompts):
     for i in range(num_images):
         image = pipeline(prompt).images
         plt.title(prompt + str(i))
+        image = img.imread(image)
         plt.imshow(image)
         filename = 'generated_images/'+'_'.join(prompt.split(',')[0].split(' ')) + str(i) + '.png'
         plt.savefig(filename)
