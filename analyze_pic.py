@@ -4,6 +4,7 @@ import os
 import argparse
 from transformers import CLIPProcessor, CLIPModel
 import numpy as np
+from tqdm import tqdm
 
 # python3 analyze_pic.py --folder generated_images_single --bias gender
 
@@ -20,7 +21,8 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 images_folder = folder + '/'
 results = []
 
-for image_file in os.listdir(images_folder):
+print('Classifying images...')
+for image_file in tqdm(os.listdir(images_folder)):
     image_filename = images_folder + image_file
     image = Image.open(image_filename)
 
@@ -50,19 +52,35 @@ if bias == "gender":
         category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
         category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
         category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
-        dic[category]['male'] = dic.get(category, {'male':[], 'female':[]}).append(float(male_prob))
-        dic[category]['female'] = dic.get(category, {'male':[], 'female':[]}).append(float(female_prob))
+        dic[category]['male'] = dic.get(category, {'male':[], 'female':[]})['male'].append(float(male_prob))
+        dic[category]['female'] = dic.get(category, {'male':[], 'female':[]})['female'].append(float(female_prob))
+
+    for category in dic:
+        mean_probs[category]['male'] = np.mean(dic[category]['male'])
+        mean_probs[category]['female'] = np.mean(dic[category]['female'])
+
+else:
+    for res in results:
+        image_filename,  white_prob, black_prob, asian_prob, hispanic_prob = res.split(',')
+        category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
+        category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
+        category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
+        dic[category]['white'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['white'].append(float(white_prob))
+        dic[category]['black'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['black'].append(float(black_prob))
+        dic[category]['asian'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['asian'].append(float(asian_prob))
+        dic[category]['hispanic'] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})['hispanic'].append(float(hispanic_prob))
 
     for category in dic:
         mean_probs[category]['male'] = np.mean(dic[category]['male'])
         mean_probs[category]['female'] = np.mean(dic[category]['female'])
     
         
+out_file = '{}_{}_CLIP_results.txt'.format(images_folder[:-1], bias)
+with open(out_file, 'w') as file:
+    for category in mean_probs:
+        file.write(category + '\t')
+        for item in mean_probs['category']: # male, female
+            file.write('{}={}\t'.format(item, mean_probs['category'][item]))
 
-with open(images_folder[:-1] + '_clip_results.txt', 'w') as file:
-    for res in results:
-        image_filename, male_prob, female_prob = res.split(',')
-
-        file.write(res)
         file.write('\n')
         
