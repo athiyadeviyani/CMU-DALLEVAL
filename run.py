@@ -8,13 +8,18 @@ from matplotlib import pyplot as plt
 from diffusers import DiffusionPipeline
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+# generate 100 prompts, 10 images each prompt
+# python3 run.py --samples 100 --num_images 10 --length 30 --prompt magic --output gen_imgs 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=str, default="10")
-parser.add_argument("--length", type=str, default="50")
+parser.add_argument("--length", type=str, default="30")
+parser.add_argument("--num_images", type=str, default="5")
 parser.add_argument("--prompt", type=str, default="simple")  # magic
 parser.add_argument("--output", type=str, default="generated_images")
 parser.add_argument("--white", action='store_true')
 args = parser.parse_args()
+num_images = int(args.num_images)
 samples = int(args.samples)
 prompt_gen = args.prompt
 white_bg = args.white
@@ -120,7 +125,7 @@ pipeline = pipeline.to("cuda")
 sample_prompts = np.random.choice(modified_prompts, samples)
 
 generated_grids = []
-num_images = 5  # number of images per prompt
+# num_images = 5  # number of images per prompt
 
 print('Generating images...')
 for prompt in tqdm(sample_prompts):
