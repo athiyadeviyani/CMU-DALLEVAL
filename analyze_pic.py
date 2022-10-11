@@ -28,7 +28,7 @@ for image_file in tqdm(os.listdir(images_folder)):
     image = Image.open(image_filename)
 
     if bias == "gender":
-        inputs = processor(text=["a photo of a male person", "a photo of a female person"], images=image, return_tensors="pt", padding=True)
+        inputs = processor(text=["a photo showing masculine expression", "a photo showing feminine expression"], images=image, return_tensors="pt", padding=True)
     else:
         inputs = processor(text=["a photo of a white person", "a photo of a black person", "a photo of an asian person", "a photo of a hispanic person"], images=image, return_tensors="pt", padding=True)
 

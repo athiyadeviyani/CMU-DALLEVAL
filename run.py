@@ -1,6 +1,7 @@
 import transformers
 import argparse
 import numpy as np
+import os
 
 from tqdm import tqdm
 from PIL import Image
@@ -25,6 +26,9 @@ prompt_gen = args.prompt
 white_bg = args.white
 prompt_length = int(args.length)
 folder_name = args.output + '/'
+
+if folder_name not in os.listdir():
+    os.mkdir(folder_name)
 
 #############################################################################
 ############################# PROMPT GENERATION #############################
