@@ -40,7 +40,7 @@ for image_file in tqdm(os.listdir(images_folder)):
             outputs = model(**inputs)
             logits_per_image = outputs.logits_per_image # this is the image-text similarity score
             # masculine expression goes first
-            output_str += str(logits_per_image) + ','
+            output_str += str(logits_per_image[0][0].item()) + ','
         results.append(output_str[:-1])
 
 
