@@ -19,7 +19,7 @@ parser.add_argument("--outdir", type=str, default='generated_images')  # output 
 
 args = parser.parse_args()
 samples = args.samples
-prompt_length = args.prompt_lengt
+prompt_length = args.prompt_length
 num_images = args.num_images
 model = args.model
 outdir = args.outdir
