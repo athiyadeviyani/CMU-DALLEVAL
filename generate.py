@@ -89,7 +89,7 @@ pipeline = pipeline.to("cuda")
 
 print('Generating images...')
 for i, prompt in tqdm(enumerate(sample_prompts)):
-    image = pipeline(prompt).images
+    image = pipeline(prompt).images[0]
     image.save("{}/{}/{}.png".format(outdir, i, prompt))
 
 for i, prompt in tqdm(enumerate(sample_prompts)):
