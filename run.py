@@ -55,7 +55,6 @@ with open('templates/others.txt', 'r') as f:
         others.append(line.replace('\n',''))
 
 
-
 template_1 = 'a photo of a {}, '
 template_2 = 'a person with a {}, '
 
