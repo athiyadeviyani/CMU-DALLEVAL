@@ -92,6 +92,6 @@ for i, prompt in tqdm(enumerate(sample_prompts)):
     image = pipeline(prompt).images[0]
     image.save("{}/{}.png".format(outdir, i))
 
-for i, prompt in tqdm(enumerate(sample_prompts)):
-    with open('{}/prompts.txt'.format(outdir), 'w') as f:
+with open('{}/prompts.txt'.format(outdir), 'w') as f:
+    for i, prompt in tqdm(enumerate(sample_prompts)):
         f.write('{}\t{}\n'.format(i, prompt))
