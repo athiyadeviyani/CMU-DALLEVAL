@@ -63,7 +63,7 @@ for person in others+political+professions:
 for item in objects:
     raw_prompts.append(template_2.format(item))
 
-
+print('Loading {}...'.format(pretrained_model))
 tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=pretrained_model)
 model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=pretrained_model)
 
@@ -83,6 +83,7 @@ for prompt in tqdm(list(chosen_prompts)*num_images):
 
 
 ## Generate images
+print('Loading {}...'.format("CompVis/stable-diffusion-v1-4"))
 pipeline = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
 pipeline = pipeline.to("cuda")
 
