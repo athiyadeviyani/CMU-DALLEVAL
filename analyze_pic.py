@@ -88,7 +88,6 @@ with open(out_file, 'w') as file:
 
     file.write('\n')
 
-    
     for category in mean_probs:
         file.write(category + ',')
         str_to_write = ""
