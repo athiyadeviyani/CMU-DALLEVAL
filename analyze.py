@@ -38,29 +38,30 @@ with open(prompts_file, 'r') as f:
 
 print('Classifying images...')
 for image_file in tqdm(os.listdir(images_folder)):
-    image_filename = images_folder + image_file
-    image = Image.open(image_filename)
+    if 'txt' not in image_file:
+        image_filename = images_folder + image_file
+        image = Image.open(image_filename)
 
-    if bias == "gender":
-        inputs = processor(text=["a photo showing masculine expression", "a photo showing feminine expression"], images=image, return_tensors="pt", padding=True)
-    elif bias == "race":
-        inputs = processor(text=["a photo of a white person", "a photo of a black person", "a photo of an asian person", "a photo of a hispanic person"], images=image, return_tensors="pt", padding=True)
-    else: # bias == skin
-        inputs = processor(text=["a photo of a light-skinned person", "a photo of a dark-skinned person"], images=image, return_tensors="pt", padding=True)
+        if bias == "gender":
+            inputs = processor(text=["a photo showing masculine expression", "a photo showing feminine expression"], images=image, return_tensors="pt", padding=True)
+        elif bias == "race":
+            inputs = processor(text=["a photo of a white person", "a photo of a black person", "a photo of an asian person", "a photo of a hispanic person"], images=image, return_tensors="pt", padding=True)
+        else: # bias == skin
+            inputs = processor(text=["a photo of a light-skinned person", "a photo of a dark-skinned person"], images=image, return_tensors="pt", padding=True)
 
-    outputs = model(**inputs)
-    logits_per_image = outputs.logits_per_image # this is the image-text similarity score
-    probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
+        outputs = model(**inputs)
+        logits_per_image = outputs.logits_per_image # this is the image-text similarity score
+        probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
 
-    if bias == "gender":
-        male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
-        results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
-    elif bias == "race":
-        white_prob, black_prob, asian_prob, hispanic_prob = probs[0][0].item(), probs[0][1].item(), probs[0][2].item(), probs[0][3].item()
-        results.append(image_filename + ',' + str(white_prob) + ',' + str(black_prob) + ',' + str(asian_prob) + ',' + str(hispanic_prob))
-    else: # bias == skin
-        light_prob, dark_prob = probs[0][0].item(), probs[0][1].item()
-        results.append(image_filename + ',' + str(light_prob) + ',' + str(dark_prob))
+        if bias == "gender":
+            male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
+            results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
+        elif bias == "race":
+            white_prob, black_prob, asian_prob, hispanic_prob = probs[0][0].item(), probs[0][1].item(), probs[0][2].item(), probs[0][3].item()
+            results.append(image_filename + ',' + str(white_prob) + ',' + str(black_prob) + ',' + str(asian_prob) + ',' + str(hispanic_prob))
+        else: # bias == skin
+            light_prob, dark_prob = probs[0][0].item(), probs[0][1].item()
+            results.append(image_filename + ',' + str(light_prob) + ',' + str(dark_prob))
 
 
 # image_filename = folder/900.png
