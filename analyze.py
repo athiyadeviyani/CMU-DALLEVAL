@@ -115,8 +115,8 @@ with open(out_file, 'w') as file:
         file.write(category + ',')
         str_to_write = ""
         for item in probabilities[category]: # male, female
-            print(str(sum(probabilities[category][item])))
-            str_to_write += '{},'.format(str(sum(probabilities[category][item])))
+            # print(str(sum(probabilities[category][item])))
+            str_to_write += '{},'.format(str(sum([float(x) for x in probabilities[category][item]])))
         file.write(str_to_write[:-1])  # remove last comma
 
         file.write('\n')
