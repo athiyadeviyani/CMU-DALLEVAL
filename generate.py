@@ -9,7 +9,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # sample
 # python3 generate.py --samples 20 --prompt_length 50 --num_images 5 --model stablediffusion --outdir gen_imgs_sd
-# python3 generate.py --samples 50 --num_images 10 --outdir gen_imgs_disney --disney
+
+# generate 100 prompts, 10 images per prompt
+# python3 generate.py --samples 100 --num_images 10 --outdir gen_imgs_disney --disney
+
+# sample disney
+# python3 generate.py --samples 1 --num_images 1 --outdir gen_imgs_disney_test --disney
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type=int, default=10)  # number of prompts
