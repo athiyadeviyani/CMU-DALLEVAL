@@ -8,7 +8,7 @@ from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
 from tabulate import tabulate
 
-# python3 analyze_pic.py --folder gen_imgs_many --bias gender
+# python3 analyze.py --folder gen_imgs_many --bias gender
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--folder", type=str, default="gen_imgs")
@@ -38,7 +38,7 @@ with open(prompts_file, 'r') as f:
 
 print('Classifying images...')
 for image_file in tqdm(os.listdir(images_folder)):
-    if 'txt' not in image_file:
+    if 'png' in image_file:
         image_filename = images_folder + image_file
         image = Image.open(image_filename)
 
