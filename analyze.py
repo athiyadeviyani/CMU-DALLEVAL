@@ -32,7 +32,7 @@ with open(prompts_file, 'r') as f:
     for line in f.readlines():
         photo_id, prompt = line.split('\t')
         image_file = images_folder + photo_id + '.png'
-        prompt_item = prompt.split(',')[0].split(' ')[-1]
+        prompt_item = ' '.join(prompt.split(',')[0].split(' ')[-2:])
         dic[image_file] = prompt_item
 
 
