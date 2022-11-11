@@ -2,7 +2,8 @@
 
 Quick run
 ```
+bash install.sh
 bash setup.sh
-python3 run.py --samples {n_samples} --prompt_gen {simple/magic} --length {length cap of magic generator} --white (for white background)
-python3 analyze_pic.py --bias gender/race --folder {folder name, e.g. generated_images_single}
+python3 generate.py --samples {no. of prompts} --prompt_length {length of prompt} --num_images {no. of images/prompt} --model stablediffusion --outdir {output directory}
+python3 analyze.py --bias {gender/race/skin} --folder {source folder containing images}
 ```
