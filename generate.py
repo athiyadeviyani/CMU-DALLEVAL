@@ -105,7 +105,7 @@ prompts = []
 
 for prompt in chosen_prompts:
     for style in chosen_styles:
-        final_prompt = prompt + style + 'style'  # a photo of a nurse, digital art style
+        final_prompt = prompt + style + ' style'  # a photo of a nurse, digital art style
         prompts.append(final_prompt)
 
 prompts = prompts * num_images
