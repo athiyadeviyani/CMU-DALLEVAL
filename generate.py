@@ -7,37 +7,37 @@ from tqdm import tqdm
 from diffusers import DiffusionPipeline
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# sample
-# python3 generate.py --samples 20 --prompt_length 50 --num_images 5 --model stablediffusion --outdir gen_imgs_sd
 
-# generate 100 prompts, 10 images per prompt
-# python3 generate.py --samples 100 --num_images 10 --outdir gen_imgs_disney --disney
-
-# sample disney
-# python3 generate.py --samples 1 --num_images 1 --outdir gen_imgs_disney_test --disney
-
+# get arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--samples", type=int, default=10)  # number of prompts
-parser.add_argument("--prompt_length", type=int, default=50)
+parser.add_argument("--num_prompts", type=int, default=10)  # number of prompts
+parser.add_argument("--num_styles", type=int, default=10)  # number of styles per prompts
 parser.add_argument("--num_images", type=int, default=5)  # number of images per prompt
-parser.add_argument("--model", type=str, default='stablediffusion')  # stablediffusion/dalle
+# if prompts = 10, styles = 10, num_images = 5, total generated = 10 * 10 * 5 = 500
+# parser.add_argument("--model", type=str, default='stablediffusion')  # stablediffusion/dalle
 parser.add_argument("--outdir", type=str, default='generated_images')  # output folder
-parser.add_argument("--disney", action='store_true')
 
-args = parser.parse_args()
-samples = args.samples
-prompt_length = args.prompt_length
+# sample: generate 10 prompts ("a photo of a nurse"), 
+#   with 10 styles ("a photo of a nurse, digital art style"), 
+#   5 images each (to control for irregularities)
+#   stablediffusion model
+#   save to generated_images
+# python3 generate.py --num_prompts 10 --num_styles 10 --num_images 5 --outdir generated_images
+
+args = parser.parse_args
+num_prompts = args.num_prompts
+num_styles = args.num_styles
 num_images = args.num_images
-model = args.model
-outdir = args.outdir
-disney = args.disney
+outdir = args.outdir 
 
 if outdir not in os.listdir():
     os.mkdir(outdir)
 
-pretrained_model = "Gustavosta/MagicPrompt-Stable-Diffusion" if model == "stablediffusion" else "Gustavosta/MagicPrompt-Dalle"
+print('ARGS: num_prompts={}, num_styles={}, num_images={}, outdir={}'.format(
+    num_prompts, num_styles, num_images, outdir))
 
-# Select sample prompts randomly from template
+############# select sample prompts randomly from template #############
+print('Generating prompts...')
 
 professions = []
 with open('templates/professions.txt', 'r') as f:
@@ -70,50 +70,47 @@ for person in others+political+professions:
 for item in objects:
     raw_prompts.append(template_2.format(item))
 
-if disney:
-    chosen_prompts = np.random.choice(raw_prompts, samples)
-    sample_prompts = []
-
-    print('Generating prompts...')
-    for prompt in tqdm(list(chosen_prompts)*num_images):
-        new_prompt = prompt + 'modern disney style'
-        sample_prompts.append(new_prompt)
-
-else:
-    print('Loading {}...'.format(pretrained_model))
-    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=pretrained_model)
-    model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=pretrained_model)
-
-    prompt_generator = transformers.pipeline('text-generation', 
-                                    model=pretrained_model, 
-                                    tokenizer=tokenizer)
-
-    # randomly pick samples and generate
-    chosen_prompts = np.random.choice(raw_prompts, samples)
-    sample_prompts = []
-
-    print('Generating prompts...')
-    for prompt in tqdm(list(chosen_prompts)*num_images):
-        generated_prompt = prompt_generator(prompt, pad_token_id=tokenizer.eos_token_id, min_length=prompt_length//2, max_length=prompt_length)
-        generated_prompt = generated_prompt[0]['generated_text'].replace('\n', '')
-        sample_prompts.append(generated_prompt)
+# sample
+chosen_prompts = np.random.choice(raw_prompts, num_prompts)
 
 
-## Generate images
-if disney:  # fix the style of the art
-    print('Loading {}...'.format("nitrosocke/mo-di-diffusion"))
-    pipeline = DiffusionPipeline.from_pretrained("nitrosocke/mo-di-diffusion")
-    pipeline = pipeline.to("cuda")
-else:
-    print('Loading {}...'.format("CompVis/stable-diffusion-v1-4"))
-    pipeline = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
-    pipeline = pipeline.to("cuda")
 
-print('Generating images...')
-for i, prompt in tqdm(enumerate(sample_prompts)):
+############# append style to prompt #############
+styles = []
+with open('templates/styles.txt', 'r') as f:
+    for line in f.readlines():
+        others.append(line.replace('\n',''))
+
+# sample
+chosen_styles = np.random.choice(styles, num_styles)
+
+
+
+############# prompts to generate #############
+
+# total length = len(chosen_prompts) * len(chosen_styles) * num_images
+
+prompts = []
+
+for prompt in chosen_prompts:
+    for style in chosen_styles:
+        final_prompt = prompt + style + 'style'  # a photo of a nurse, digital art style
+
+prompts = prompts * num_images
+
+print('Generated {} prompts!'.format(len(prompts)))
+
+############# generate images#############
+pipeline = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
+pipeline = pipeline.to("cuda")
+
+print('Generating images to {}...'.format(outdir))
+for i, prompt in tqdm(enumerate(prompts)):
     image = pipeline(prompt).images[0]
     image.save("{}/{}.png".format(outdir, i))
 
+# save prompts
+print('Prompts saved to {}/prompts.txt'.format(outdir))
 with open('{}/prompts.txt'.format(outdir), 'w') as f:
-    for i, prompt in tqdm(enumerate(sample_prompts)):
+    for i, prompt in tqdm(enumerate(prompts)):
         f.write('{}\t{}\n'.format(i, prompt))
