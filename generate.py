@@ -27,8 +27,7 @@ parser.add_argument("--outdir", type=str, default='generated_images')  # output 
 
 # python3 generate.py --num_prompts 20 --num_styles 25 --num_images 5 --outdir generated_images
 
-
-args = parser.parse_args
+args = parser.parse_args()
 num_prompts = args.num_prompts
 num_styles = args.num_styles
 num_images = args.num_images
