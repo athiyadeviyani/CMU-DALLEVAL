@@ -76,6 +76,8 @@ for item in objects:
 # sample
 chosen_prompts = np.random.choice(raw_prompts, num_prompts)
 
+print('Total prompts={}', format(len(raw_prompts)))
+print('Sampled prompts={}'.format(len(chosen_prompts)))
 
 
 ############# append style to prompt #############
@@ -88,6 +90,8 @@ with open('templates/styles.txt', 'r') as f:
 # sample
 chosen_styles = np.random.choice(styles, num_styles)
 
+print('Total styles={}', format(len(styles)))
+print('Sampled styles={}'.format(len(chosen_styles)))
 
 
 ############# prompts to generate #############
