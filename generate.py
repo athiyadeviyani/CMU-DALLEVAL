@@ -112,6 +112,12 @@ prompts = prompts * num_images
 
 print('Generated {} prompts!'.format(len(prompts)))
 
+# save prompts
+print('Prompts saved to {}/prompts.txt'.format(outdir))
+with open('{}/prompts.txt'.format(outdir), 'w') as f:
+    for i, prompt in tqdm(enumerate(prompts)):
+        f.write('{}\t{}\n'.format(i, prompt))
+
 ############# generate images#############
 pipeline = DiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
 pipeline = pipeline.to("cuda")
@@ -120,9 +126,3 @@ print('Generating images to {}...'.format(outdir))
 for i, prompt in tqdm(enumerate(prompts)):
     image = pipeline(prompt).images[0]
     image.save("{}/{}.png".format(outdir, i))
-
-# save prompts
-print('Prompts saved to {}/prompts.txt'.format(outdir))
-with open('{}/prompts.txt'.format(outdir), 'w') as f:
-    for i, prompt in tqdm(enumerate(prompts)):
-        f.write('{}\t{}\n'.format(i, prompt))
