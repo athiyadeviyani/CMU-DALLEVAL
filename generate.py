@@ -39,6 +39,9 @@ if outdir not in os.listdir():
 print('ARGS: num_prompts={}, num_styles={}, num_images={}, outdir={}'.format(
     num_prompts, num_styles, num_images, outdir))
 
+print('On an AWS p3.3xlarge machine, generation will take about {} hours.'.format(round(num_images*num_prompts*num_styles*7/60/60, 2)))
+
+
 ############# select sample prompts randomly from template #############
 print('Generating prompts...')
 
