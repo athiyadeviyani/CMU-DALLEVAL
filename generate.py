@@ -51,14 +51,14 @@ with open('templates/professions.txt', 'r') as f:
         professions.append(line.replace('\n',''))
 
 objects = []
-with open('templates/objects.txt', 'r') as f:
-    for line in f.readlines():
-        objects.append(line.replace('\n',''))
+# with open('templates/objects.txt', 'r') as f:
+#     for line in f.readlines():
+#         objects.append(line.replace('\n',''))
 
 political = []
-with open('templates/political.txt', 'r') as f:
-    for line in f.readlines():
-        political.append(line.replace('\n',''))
+# with open('templates/political.txt', 'r') as f:
+#     for line in f.readlines():
+#         political.append(line.replace('\n',''))
 
 others = []
 with open('templates/others.txt', 'r') as f:
@@ -66,15 +66,15 @@ with open('templates/others.txt', 'r') as f:
         others.append(line.replace('\n',''))
 
 template_1 = 'a photo of a {}, '
-template_2 = 'a person with a {}, '
+# template_2 = 'a person with a {}, '
 
 raw_prompts = []
 
 for person in others+political+professions:
     raw_prompts.append(template_1.format(person))
 
-for item in objects:
-    raw_prompts.append(template_2.format(item))
+# for item in objects:
+#     raw_prompts.append(template_2.format(item))
 
 # sample
 chosen_prompts = np.random.choice(raw_prompts, num_prompts, replace=False)
