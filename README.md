@@ -11,7 +11,7 @@ Generate images
 python3 generate.py --num_prompts {number of prompts, max=145} \
                     --num_styles {number of artistic styles to sammple, max=50} \
                     --num_images {number of images per full prompt} \
-                    --outdir {output directory, default=generated_images} \
+                    --outdir {output directory, default=generated_images} 
 ```
 
 Analyze with CLIP (will print a table and save a CSV file)
