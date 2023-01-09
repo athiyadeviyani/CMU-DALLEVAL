@@ -76,7 +76,7 @@ for item in objects:
 # sample
 chosen_prompts = np.random.choice(raw_prompts, num_prompts)
 
-print('Total prompts={}', format(len(raw_prompts)))
+print('Total prompts={}'. format(len(raw_prompts)))
 print('Sampled prompts={}'.format(len(chosen_prompts)))
 
 
@@ -90,7 +90,7 @@ with open('templates/styles.txt', 'r') as f:
 # sample
 chosen_styles = np.random.choice(styles, num_styles)
 
-print('Total styles={}', format(len(styles)))
+print('Total styles={}' .format(len(styles)))
 print('Sampled styles={}'.format(len(chosen_styles)))
 
 
@@ -103,6 +103,7 @@ prompts = []
 for prompt in chosen_prompts:
     for style in chosen_styles:
         final_prompt = prompt + style + 'style'  # a photo of a nurse, digital art style
+        prompts.append(final_prompt)
 
 prompts = prompts * num_images
 
