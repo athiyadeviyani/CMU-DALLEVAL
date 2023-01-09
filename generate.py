@@ -79,10 +79,11 @@ chosen_prompts = np.random.choice(raw_prompts, num_prompts)
 
 
 ############# append style to prompt #############
+
 styles = []
 with open('templates/styles.txt', 'r') as f:
     for line in f.readlines():
-        others.append(line.replace('\n',''))
+        styles.append(line.replace('\n',''))
 
 # sample
 chosen_styles = np.random.choice(styles, num_styles)
