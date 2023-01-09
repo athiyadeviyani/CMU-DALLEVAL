@@ -56,9 +56,9 @@ objects = []
 #         objects.append(line.replace('\n',''))
 
 political = []
-# with open('templates/political.txt', 'r') as f:
-#     for line in f.readlines():
-#         political.append(line.replace('\n',''))
+with open('templates/political.txt', 'r') as f:
+    for line in f.readlines():
+        political.append(line.replace('\n',''))
 
 others = []
 with open('templates/others.txt', 'r') as f:
