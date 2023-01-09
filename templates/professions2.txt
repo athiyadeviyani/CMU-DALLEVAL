@@ -1,13 +1,18 @@
 accountant
+animator
 architect
 assistant
 author
 baker
 biologist
 builder
+butcher
+career counselor
 caretaker
 chef
+civil servant
 clerk
+comic book writer
 company director
 computer programmer
 cook
@@ -28,12 +33,16 @@ flight attendant
 garbage collector
 geologist
 hairdresser
+head teacher
 jeweler
 journalist
 judge
+juggler
 lawyer
 lecturer
+lexicographer
 library assistant
+magician
 makeup artist
 manager
 miner
@@ -47,22 +56,30 @@ pilot
 plumber
 police officer
 politician
+porter
 printer
 prison officer
+puppeteer
 receptionist
 sailor
 salesperson
 scientist
 secretary
 shop assistant
+sign language interpreter
 singer
 soldier
+solicitor
 surgeon
 tailor
 teacher
 telephone operator
+telephonist
 translator
+travel agent
+trucker
 TV presenter
 vet
 waiter
+web designer
 writer
