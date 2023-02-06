@@ -24,6 +24,7 @@ parser.add_argument("--outdir", type=str, default='generated_images')  # output 
 #   save to generated_images
 # python3 generate.py --num_prompts 10 --num_styles 10 --num_images 5 --outdir generated_images
 
+# python3 generate.py --num_prompts 20 --num_styles 3 --num_images 4 --outdir generated_images_3
 
 # python3 generate.py --num_prompts 20 --num_styles 25 --num_images 5 --outdir generated_images
 
@@ -39,7 +40,7 @@ if outdir not in os.listdir():
 print('ARGS: num_prompts={}, num_styles={}, num_images={}, outdir={}'.format(
     num_prompts, num_styles, num_images, outdir))
 
-print('On an AWS p3.3xlarge machine, generation will take about {} hours.'.format(round(num_images*num_prompts*num_styles*7/60/60, 2)))
+print('On an AWS p3.3xlarge machine, generation will take about {} hours.'.format(round(3, 2)))
 
 
 ############# select sample prompts randomly from template #############
@@ -56,14 +57,14 @@ objects = []
 #         objects.append(line.replace('\n',''))
 
 political = []
-with open('templates/political.txt', 'r') as f:
-    for line in f.readlines():
-        political.append(line.replace('\n',''))
+# with open('templates/political.txt', 'r') as f:
+#     for line in f.readlines():
+#         political.append(line.replace('\n',''))
 
 others = []
-with open('templates/others.txt', 'r') as f:
-    for line in f.readlines():
-        others.append(line.replace('\n',''))
+# with open('templates/others.txt', 'r') as f:
+#     for line in f.readlines():
+#         others.append(line.replace('\n',''))
 
 template_1 = 'a photo of a {}, '
 # template_2 = 'a person with a {}, '

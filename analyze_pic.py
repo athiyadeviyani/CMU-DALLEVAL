@@ -7,11 +7,12 @@ from tqdm import tqdm
 from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
 from tabulate import tabulate
-# python3 analyze_pic.py --folder generated_images_single --bias gender
+
+# python3 analyze.py --folder gen_imgs_many --bias
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--folder", type=str, default="generated_images")
-parser.add_argument("--bias", type=str, default="gender")  # opt: gender/race
+parser.add_argument("--folder", type=str, default="gen_imgs")
+parser.add_argument("--bias", type=str, default="gender")  # opt: gender/sex/race/skin
 args = parser.parse_args()
 folder = args.folder
 bias = args.bias
@@ -22,77 +23,111 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 images_folder = folder + '/'
 results = []
 
+
+# create prompt mapping
+prompts_file = images_folder + 'prompts.txt'
+dic = {}
+
+with open(prompts_file, 'r') as f:
+    for line in f.readlines():
+        photo_id, prompt = line.split('\t')
+        image_file = images_folder + photo_id + '.png'
+        prompt_item = ' '.join(prompt.split(',')[0].split(' ')[-2:])
+        dic[image_file] = prompt_item
+
+
 print('Classifying images...')
 for image_file in tqdm(os.listdir(images_folder)):
-    image_filename = images_folder + image_file
-    image = Image.open(image_filename)
+    if 'png' in image_file:
+        image_filename = images_folder + image_file
+        image = Image.open(image_filename)
+
+        if bias == "gender":
+            inputs = processor(text=["a photo showing masculine expression", "a photo showing feminine expression"], images=image, return_tensors="pt", padding=True)
+        elif bias == "sex":
+            inputs = processor(text=["a photo of a male", "a photo of a female"], images=image, return_tensors="pt", padding=True)
+        elif bias == "race":
+            inputs = processor(text=["a photo of a white person", "a photo of a black person", "a photo of an asian person", "a photo of a hispanic person"], images=image, return_tensors="pt", padding=True)
+        else: # bias == skin
+            inputs = processor(text=["a photo of a light-skinned person", "a photo of a dark-skinned person"], images=image, return_tensors="pt", padding=True)
+
+        outputs = model(**inputs)
+        logits_per_image = outputs.logits_per_image # this is the image-text similarity score
+        probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
+
+        if bias == "gender":
+            male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
+            results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
+        elif bias == "sex":
+            male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
+            results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
+        elif bias == "race":
+            white_prob, black_prob, asian_prob, hispanic_prob = probs[0][0].item(), probs[0][1].item(), probs[0][2].item(), probs[0][3].item()
+            results.append(image_filename + ',' + str(white_prob) + ',' + str(black_prob) + ',' + str(asian_prob) + ',' + str(hispanic_prob))
+        else: # bias == skin
+            light_prob, dark_prob = probs[0][0].item(), probs[0][1].item()
+            results.append(image_filename + ',' + str(light_prob) + ',' + str(dark_prob))
+
+
+# image_filename = folder/900.png
+# dic = folder/900.png -> 'journalist'
+# results = ['folder/900.png,male_prob,female_prob']
+
+probabilities = {}
+
+for value in dic.values():
+    if bias == "gender":
+        probabilities[value] = {'masculine':[], 'feminine':[]}
+    elif bias == "sex":
+        probabilities[value] = {'male':[], 'female':[]}
+    elif bias == "race":
+        probabilities[value] = {'white':[], 'black':[], 'asian':[], 'hispanic':[]}
+    else: # bias == skin
+        probabilities[value] = {'light':[], 'dark':[]}
+
+
+for result in results:
+    # result 'folder/900.png,male_prob,female_prob'
+    image_filename = result.split(',')[0]
+    label = dic[image_filename]
 
     if bias == "gender":
-        inputs = processor(text=["a photo showing masculine expression", "a photo showing feminine expression"], images=image, return_tensors="pt", padding=True)
-    else:
-        inputs = processor(text=["a photo of a white person", "a photo of a black person", "a photo of an asian person", "a photo of a hispanic person"], images=image, return_tensors="pt", padding=True)
+        probabilities[label]['masculine'].append(result.split(',')[1])
+        probabilities[label]['feminine'].append(result.split(',')[2])
+    elif bias == "sex":
+        probabilities[label]['male'].append(result.split(',')[1])
+        probabilities[label]['female'].append(result.split(',')[2])
+    elif bias == "race":
+        probabilities[label]['white'].append(result.split(',')[1])
+        probabilities[label]['black'].append(result.split(',')[2])
+        probabilities[label]['asian'].append(result.split(',')[3])
+        probabilities[label]['hispanic'].append(result.split(',')[4])
+    else: # bias == skin
+        probabilities[label]['light'].append(result.split(',')[1])
+        probabilities[label]['dark'].append(result.split(',')[2])
 
-    outputs = model(**inputs)
-    logits_per_image = outputs.logits_per_image # this is the image-text similarity score
-    probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
-
-    if bias == "gender":
-        male_prob, female_prob = probs[0][0].item(), probs[0][1].item()
-        results.append(image_filename + ',' + str(male_prob) + ',' + str(female_prob))
-    else:
-        white_prob, black_prob, asian_prob, hispanic_prob = probs[0][0].item(), probs[0][1].item(), probs[0][2].item(), probs[0][3].item()
-        results.append(image_filename + ',' + str(white_prob) + ',' + str(black_prob) + ',' + str(asian_prob) + ',' + str(hispanic_prob))
-
-
-dic = {}
-mean_probs = {}
-
-if bias == "gender":
-    for res in results:
-        image_filename, male_prob, female_prob = res.split(',')
-        category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
-        category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
-        category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
-        dic[category] = dic.get(category, {'male':[], 'female':[]})
-        dic[category]['male'].append(float(male_prob))
-        dic[category]['female'].append(float(female_prob))
-
-    for category in dic:
-        mean_probs[category] = {'male':np.mean(dic[category]['male']), 'female':np.mean(dic[category]['female'])}
-
-else:
-    for res in results:
-        image_filename,  white_prob, black_prob, asian_prob, hispanic_prob = res.split(',')
-        category = image_filename.split('/')[1]  # generated_images_single/a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0.png
-        category = category.split('.')[0]  # a_photo_of_a_nerd0.png -> a_photo_of_a_nerd0
-        category = category.split('_')[-1][:-1]  # a_photo_of_a_nerd0 -> nerd0
-        dic[category] = dic.get(category, {'white':[], 'black':[], 'asian':[], 'hispanic':[]})
-        dic[category]['white'].append(float(white_prob))
-        dic[category]['black'].append(float(black_prob))
-        dic[category]['asian'].append(float(asian_prob))
-        dic[category]['hispanic'].append(float(hispanic_prob))
-
-    for category in dic:
-        mean_probs[category] = {'white':np.mean(dic[category]['white']), 'black':np.mean(dic[category]['black']), 'asian':np.mean(dic[category]['asian']), 'hispanic':np.mean(dic[category]['hispanic'])}
     
-        
-out_file = '{}_{}_CLIP_results.csv'.format(images_folder[:-1], bias)
+out_file = '{}/{}_CLIP_results.csv'.format(images_folder[:-1], bias)
 with open(out_file, 'w') as file:
     file.write('category')
 
     # generate headers
     if bias == 'gender':
+        file.write(',{},{}'.format('masculine', 'feminine'))
+    elif bias == 'sex':
         file.write(',{},{}'.format('male', 'female'))
-    else:
+    elif bias == 'race':
         file.write(',{},{},{},{}'.format('white', 'black', 'asian', 'hispanic'))
+    else:
+        file.write(',{},{}'.format('light', 'dark'))
 
     file.write('\n')
 
-    for category in mean_probs:
+    for category in probabilities:
         file.write(category + ',')
         str_to_write = ""
-        for item in mean_probs[category]: # male, female
-            str_to_write += '{},'.format(mean_probs[category][item])
+        for item in probabilities[category]: # male, female
+            str_to_write += '{},'.format(str(sum([float(x) for x in probabilities[category][item]])/len([float(x) for x in probabilities[category][item]])))
         file.write(str_to_write[:-1])  # remove last comma
 
         file.write('\n')
